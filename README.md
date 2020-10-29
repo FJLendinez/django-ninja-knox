@@ -1,12 +1,9 @@
-django-rest-knox
+django-ninja-knox
 ================
 
-[![image](https://travis-ci.org/James1345/django-rest-knox.svg?branch=develop)](https://travis-ci.org/James1345/django-rest-knox)
+Authentication Module for django ninja
 
-Authentication Module for django rest auth
-
-Knox provides easy to use authentication for [Django REST
-Framework](http://www.django-rest-framework.org/) The aim is to allow
+Knox provides easy to use authentication for [Django-ninja](https://github.com/vitalik/django-ninja) The aim is to allow
 for common patterns in applications that are REST based, with little
 extra effort; and to ensure that connections remain secure.
 
