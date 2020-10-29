@@ -1,14 +1,18 @@
-try:
-    # For django >= 2.0
-    from django.urls import include, re_path
-except ImportError:
-    # For django < 2.0
-    from django.conf.urls import include, url
-    re_path = url
+from django.urls import path
+from ninja import NinjaAPI
 
-from .views import RootView
+from knox.auth import KnoxAuth
+from knox.views import auth_router
 
-urlpatterns = [
-    re_path(r'^api/', include('knox.urls')),
-    re_path(r'^api/$', RootView.as_view(), name="api-root"),
-]
+api = NinjaAPI(auth=KnoxAuth())
+api.add_router('', auth_router)
+
+
+@api.get("/mock/")
+def mock():
+    return {"hello": "world"}
+
+
+urlpatterns = {
+    path('api/', api.urls)
+}

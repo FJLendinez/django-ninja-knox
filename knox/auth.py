@@ -7,61 +7,31 @@ except ImportError:
 import binascii
 
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
-from rest_framework import exceptions
-from rest_framework.authentication import (
-    BaseAuthentication, get_authorization_header,
-)
-
 from knox.crypto import hash_token
 from knox.models import AuthToken
 from knox.settings import CONSTANTS, knox_settings
 from knox.signals import token_expired
+from ninja.security import APIKeyHeader
 
 
-class TokenAuthentication(BaseAuthentication):
-    '''
-    This authentication scheme uses Knox AuthTokens for authentication.
+class KnoxAuth(APIKeyHeader):
+    param_name = "Authorization"
 
-    Similar to DRF's TokenAuthentication, it overrides a large amount of that
-    authentication scheme to cope with the fact that Tokens are not stored
-    in plaintext in the database
-
-    If successful
-    - `request.user` will be a django `User` instance
-    - `request.auth` will be an `AuthToken` instance
-    '''
-    model = AuthToken
-
-    def authenticate(self, request):
-        auth = get_authorization_header(request).split()
-        prefix = knox_settings.AUTH_HEADER_PREFIX.encode()
-
-        if not auth:
-            return None
-        if auth[0].lower() != prefix.lower():
-            # Authorization header is possibly for another backend
-            return None
-        if len(auth) == 1:
-            msg = _('Invalid token header. No credentials provided.')
-            raise exceptions.AuthenticationFailed(msg)
-        elif len(auth) > 2:
-            msg = _('Invalid token header. '
-                    'Token string should not contain spaces.')
-            raise exceptions.AuthenticationFailed(msg)
-
-        user, auth_token = self.authenticate_credentials(auth[1])
-        return (user, auth_token)
+    def authenticate(self, request, key):
+        user, auth_token = self.authenticate_credentials(key)
+        request._auth = auth_token
+        return user
 
     def authenticate_credentials(self, token):
         '''
-        Due to the random nature of hashing a value, this must inspect
+        Due to the random nature of hashing a salted value, this must inspect
         each auth_token individually to find the correct one.
 
         Tokens that have expired will be deleted and skipped
         '''
-        msg = _('Invalid token.')
-        token = token.decode("utf-8")
+        if not token:
+            return None, None
+
         for auth_token in AuthToken.objects.filter(
                 token_key=token[:CONSTANTS.TOKEN_KEY_LENGTH]):
             if self._cleanup_token(auth_token):
@@ -70,12 +40,12 @@ class TokenAuthentication(BaseAuthentication):
             try:
                 digest = hash_token(token)
             except (TypeError, binascii.Error):
-                raise exceptions.AuthenticationFailed(msg)
+                return None, None
             if compare_digest(digest, auth_token.digest):
                 if knox_settings.AUTO_REFRESH and auth_token.expiry:
                     self.renew_token(auth_token)
                 return self.validate_user(auth_token)
-        raise exceptions.AuthenticationFailed(msg)
+        return None, None
 
     def renew_token(self, auth_token):
         current_expiry = auth_token.expiry
@@ -88,8 +58,7 @@ class TokenAuthentication(BaseAuthentication):
 
     def validate_user(self, auth_token):
         if not auth_token.user.is_active:
-            raise exceptions.AuthenticationFailed(
-                _('User inactive or deleted.'))
+            return None, None
         return (auth_token.user, auth_token)
 
     def authenticate_header(self, request):

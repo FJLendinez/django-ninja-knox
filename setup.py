@@ -17,8 +17,8 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='4.1.0',
-    description='Authentication for django rest framework',
+    version='0.1.0',
+    description='Authentication for django-ninja',
     long_description=long_description,
     long_description_content_type='text/markdown',
 
@@ -26,8 +26,8 @@ setup(
     url='https://github.com/James1345/django-rest-knox',
 
     # Author details
-    author='James McMahon',
-    author_email='james1345@googlemail.com',
+    author='Francisco Javier Lendínez Tirado',
+    author_email='fjlendinez@gmail.com',
 
     # Choose your license
     license='MIT',
@@ -46,8 +46,6 @@ setup(
 
         # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
@@ -55,7 +53,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='django rest authentication login',
+    keywords='django-ninja authentication login',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
@@ -66,7 +64,7 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['django', 'djangorestframework', 'cryptography'],
+    install_requires=['django', 'django-ninja', 'cryptography'],
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
@@ -76,6 +74,8 @@ setup(
         'dev': [],
         'test': [],
     },
+
+    python_requires='>=3.7',
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
