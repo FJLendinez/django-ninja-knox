@@ -12,7 +12,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='django-rest-knox',
+    name='django-ninja-knox',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
@@ -23,7 +23,7 @@ setup(
     long_description_content_type='text/markdown',
 
     # The project's main homepage.
-    url='https://github.com/James1345/django-rest-knox',
+    url='https://github.com/FJLendinez/django-ninja-knox/',
 
     # Author details
     author='Francisco Javier Lendínez Tirado',
