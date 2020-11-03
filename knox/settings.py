@@ -5,8 +5,7 @@ from django.conf import settings
 USER_SETTINGS = getattr(settings, 'REST_KNOX', {})
 ISO_8601 = 'iso-8601'
 
-
-knox_settings = {
+SETTINGS = {
     'SECURE_HASH_ALGORITHM': '',
     'AUTH_TOKEN_CHARACTER_LENGTH': 64,
     'TOKEN_TTL': timedelta(hours=10),
@@ -18,7 +17,15 @@ knox_settings = {
     'EXPIRY_DATETIME_FORMAT': ISO_8601
 }
 
-knox_settings.update(USER_SETTINGS)
+SETTINGS.update(USER_SETTINGS)
+
+
+class KnoxSettings:
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
+
+
+knox_settings = KnoxSettings(**SETTINGS)
 
 
 class CONSTANTS:
